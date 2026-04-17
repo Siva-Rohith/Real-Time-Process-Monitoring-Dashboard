@@ -53,5 +53,5 @@ void setup() {
 
 void loop() {
     webSocket.loop();
-    delay(10); 
+    // delay(10); 
 }

@@ -27,3 +27,30 @@
         if (heapChart.data.datasets[0].data.length > 20) heapChart.data.datasets[0].data.shift();
         heapChart.update();
     };
+ // --- CHART INITIALIZATION ---
+    
+    const ctx = document.getElementById('heapChart').getContext('2d');
+    const heapChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(20).fill(''),
+            datasets: [{
+                data: [],
+                backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                fill: true
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            scales: { 
+                x: { display: false }, 
+                y: { 
+                    grid: { color: '#30363d' },
+                    ticks: { color: '#8b949e' },
+                    beginAtZero: false // THIS IS THE FIX: Zoom in on the data!
+                } 
+            },
+            plugins: { legend: { display: false } }
+        }
+    });

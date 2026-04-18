@@ -23,7 +23,29 @@
         <h2><span class="text-primary">RTOS</span> Kernel Sentinel</h2>
         <div id="connection-status" class="badge bg-danger p-2">OFFLINE</div>
     </div>
-</div>
+<div class="row">
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h6>Global Free Heap</h6>
+                <h3 id="total-heap">---</h3>
+                <div class="progress mt-2"><div id="heap-bar" class="progress-bar bg-success" style="width: 0%"></div></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h6>Global CPU Load</h6>
+                <h3 id="cpu-load-text" class="text-info">0%</h3>
+                <div class="progress mt-2"><div id="cpu-bar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 0%"></div></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h6>System Uptime</h6>
+                <h3 id="uptime">00:00:00</h3>
+                <small class="text-muted">Kernel Heartbeat</small>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

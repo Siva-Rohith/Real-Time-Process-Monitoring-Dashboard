@@ -28,16 +28,21 @@
         heapChart.update();
     };
  // --- CHART INITIALIZATION ---
-    
+    // --- UPDATED CHART CONFIG (AUTO-ZOOM ENABLED) ---
     const ctx = document.getElementById('heapChart').getContext('2d');
     const heapChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: Array(20).fill(''),
             datasets: [{
+                label: 'Free Heap',
                 data: [],
+                borderColor: '#58a6ff',
                 backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                fill: true
+                fill: true,
+                pointRadius: 4, // Larger points for visibility
+                borderWidth: 3,
+                tension: 0.4
             }]
         },
         options: { 
@@ -51,6 +56,7 @@
                     beginAtZero: false // THIS IS THE FIX: Zoom in on the data!
                 } 
             },
+            animation: { duration: 400 }, // Smooth transitions
             plugins: { legend: { display: false } }
         }
     });

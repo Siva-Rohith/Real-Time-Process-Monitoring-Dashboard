@@ -1,57 +1,57 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WebSocketsServer.h>
-// --- WIFI SETTINGS ---
-const char* ssid = "Daksh_hotspot";    
-const char* password = "dddd1234";  
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
+const char* ssid = "Daksh_hotspot";    
+const char* password = "dddd1234";  
+
+
+// Defining the possible states of a process
+enum State { READY, RUNNING, BLOCKED, KILLED };
+
+// The Process Control Block (PCB) Structure
+struct ProcessControlBlock {
+    int pid;            // Process ID
+    const char* name;   // Process Name
+    State state;        // Current State
+    uint32_t mem;       // Memory usage (KB)
+    int cpu;            // CPU usage (%)
+};
+
+// Initializing 3 Simulated Kernel Processes
+ProcessControlBlock processes[3] = {
+    {1, "Sensor_P1", READY, 1024, 0},
+    {2, "Network_P2", READY, 2048, 0},
+    {3, "Calc_P3", BLOCKED, 512, 0}
+};
+
 void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-    switch(type) {
-        case WStype_CONNECTED:
-            Serial.printf("[KERNEL] Admin Dashboard connected on channel [%u]\n", num);
-            break;
-        case WStype_DISCONNECTED:
-            Serial.printf("[KERNEL] Admin Dashboard disconnected\n");
-            break;
-        case WStype_TEXT:
-            // This will handle our 'KILL:1' or 'BLOCK:2' commands later
-            Serial.printf("[SIGNAL] Received from Admin: %s\n", payload);
-            break;
+    if (type == WStype_CONNECTED) {
+        Serial.printf("[KERNEL] Dashboard connected [%u]\n", num);
     }
 }
 
 void setup() {
-  
     Serial.begin(115200);
     delay(1000);
-
-    // Initial System Message
-    Serial.println("\n[SYSTEM] RTOS Sentinel Kernel Initializing...");
-    Serial.printf("[SYSTEM] Attempting to connect to SSID: %s\n", ssid);
-
-   
+    
     WiFi.begin(ssid, password);
-    
-    
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
 
-    // Success Message
-    Serial.println("\n[SYSTEM] Network Layer Established!");
-    Serial.print("[SYSTEM] IP Address assigned: ");
-    Serial.println(WiFi.localIP());
-
+    Serial.println("\n[SYSTEM] Network Layer Online");
+    
     webSocket.begin();
     webSocket.onEvent(onWebSocketEvent);
-    Serial.println("[SYSTEM] Communication Protocol (WebSocket) Initialized on Port 81");
-
+    
+    
+    Serial.println("[SYSTEM] Kernel PCB structures initialized for 3 tasks.");
 }
 
 void loop() {
-    webSocket.loop();
-    // delay(10); 
+    webSocket.loop(); 
 }

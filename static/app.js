@@ -101,6 +101,12 @@
             tableBody.insertAdjacentHTML('beforeend', row);
         });
 
+        // Update Top Cards
+        document.getElementById('total-heap').innerText = data.heap.toLocaleString() + " B";
+        document.getElementById('heap-bar').style.width = (data.heap / MAX_HEAP * 100) + "%";
+        document.getElementById('cpu-load-text').innerText = totalCPU + "%";
+        document.getElementById('cpu-bar').style.width = totalCPU + "%";
+        document.getElementById('uptime').innerText = new Date(data.uptime * 1000).toISOString().substr(11, 8);
     }
 
     function getStatusClass(state) {

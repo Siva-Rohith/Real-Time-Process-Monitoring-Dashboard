@@ -117,7 +117,7 @@
     }
 
 
-    // --- COMMAND UPLINK ---
+    // --- COMMAND UPLINK ----
     function manageProcess(pid, action) {
         // Send command to ESP8266
         socket.send(`${action}:${pid}`);

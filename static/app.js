@@ -117,11 +117,17 @@
     }
 
 
+    // --- COMMAND UPLINK ---
+    function manageProcess(pid, action) {
+        // Send command to ESP8266
+        socket.send(`${action}:${pid}`);
+        logEvent(`[ADMIN] Command: ${action} PID ${pid}`);
+    }
+
+    function logEvent(msg) {
+        const log = document.getElementById('event-log');
+        log.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
 
 
-
-       
-
-    
-
-    

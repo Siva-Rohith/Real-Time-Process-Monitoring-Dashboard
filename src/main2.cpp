@@ -24,8 +24,25 @@ ProcessControlBlock processes[3] = {
     {3, "Calc_P3", BLOCKED, 512, 0}
 };
 
+
 void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-    if (type == WStype_CONNECTED) Serial.printf("[KERNEL] Dashboard Link Active\n");
+    if (type == WStype_TEXT) {
+        String msg = (char*)payload;
+        int sepIndex = msg.indexOf(':');
+        
+        if (sepIndex != -1) {
+            String command = msg.substring(0, sepIndex);
+            int targetPid = msg.substring(sepIndex + 1).toInt();
+            int idx = targetPid - 1; // Array index is PID - 1
+
+            if (command == "KILL" && idx >= 0 && idx < 3) {
+                processes[idx].state = KILLED;
+                processes[idx].mem = 0;
+                processes[idx].cpu = 0;
+                Serial.printf("[KERNEL] SIGKILL received for PID %d\n", targetPid);
+            }
+        }
+    }
 }
 
 void setup() {
@@ -35,7 +52,7 @@ void setup() {
     
     webSocket.begin();
     webSocket.onEvent(onWebSocketEvent);
-    Serial.println("\n[SYSTEM] Kernel Simulator Active.");
+    Serial.println("\n[SYSTEM] Kernel Command Layer (Day 6) Active.");
 }
 
 void loop() {
@@ -47,27 +64,27 @@ void loop() {
 
         StaticJsonDocument<1024> doc;
         doc["uptime"] = millis() / 1000;
-       
         doc["heap"] = ESP.getFreeHeap(); 
         
         JsonArray array = doc.createNestedArray("processes");
 
         for (int i = 0; i < 3; i++) {
-            // --- DAY 5: SIMULATION LOGIC ---
-            // Randomly toggle between RUNNING and BLOCKED
-            processes[i].state = (random(0, 10) > 7) ? BLOCKED : RUNNING;
-            
-            if (processes[i].state == RUNNING) {
-                processes[i].cpu = random(10, 60);  // Simulating CPU load
-                processes[i].mem = random(1024, 4096); // Simulating memory flux
-            } else {
-                processes[i].cpu = 0;
+            // Day 6: Only update simulation if process isn't KILLED
+            if (processes[i].state != KILLED) {
+                processes[i].state = (random(0, 10) > 8) ? BLOCKED : RUNNING;
+                if (processes[i].state == RUNNING) {
+                    processes[i].cpu = random(15, 45);
+                    processes[i].mem = random(2000, 8000); 
+                } else {
+                    processes[i].cpu = 0;
+                }
             }
 
             JsonObject p = array.createNestedObject();
             p["pid"] = processes[i].pid;
             p["name"] = processes[i].name;
-            p["state"] = (processes[i].state == RUNNING) ? "RUNNING" : "BLOCKED";
+            p["state"] = (processes[i].state == RUNNING ? "RUNNING" : 
+                          (processes[i].state == BLOCKED ? "BLOCKED" : "KILLED"));
             p["cpu"] = processes[i].cpu;
             p["mem"] = processes[i].mem;
         }
@@ -75,6 +92,5 @@ void loop() {
         String output;
         serializeJson(doc, output);
         webSocket.broadcastTXT(output); 
-        Serial.println("[SIMULATOR] Process states updated and broadcasted.");
     }
 }

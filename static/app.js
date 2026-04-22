@@ -1,9 +1,10 @@
+
     const ESP_IP = "10.223.211.239"; 
     const MAX_HEAP = 52000; 
     let processes = [];
 
     // --- WEBSOCKET CONNECTION ---
-    const socket = new WebSocket(ws://${ESP_IP}:81/);
+    const socket = new WebSocket(`ws://${ESP_IP}:81/`);
 
     socket.onopen = () => {
         document.getElementById('connection-status').className = "badge bg-success p-2";
@@ -27,7 +28,8 @@
         if (heapChart.data.datasets[0].data.length > 20) heapChart.data.datasets[0].data.shift();
         heapChart.update();
     };
- // --- CHART INITIALIZATION ---
+
+    // --- CHART INITIALIZATION ---
     // --- UPDATED CHART CONFIG (AUTO-ZOOM ENABLED) ---
     const ctx = document.getElementById('heapChart').getContext('2d');
     const heapChart = new Chart(ctx, {
@@ -116,8 +118,7 @@
         return 'status-killed';
     }
 
-
-    // --- COMMAND UPLINK ----
+    // --- COMMAND UPLINK ---
     function manageProcess(pid, action) {
         // Send command to ESP8266
         socket.send(`${action}:${pid}`);
@@ -129,5 +130,3 @@
         log.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
         log.scrollTop = log.scrollHeight;
     }
-
-
